@@ -1,18 +1,27 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
-from flask_mail import Mail, Message
-from psycopg2 import connect, sql
-from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash
-import  os, base64
-from email.mime.multipart import MIMEMultipart
-from email.header import Header
-import smtplib
-from sendgrid.helpers.mail import Mail, Email, To, Content
-import ssl,secrets
+from psycopg2 import connect, sql
+import os
+import secrets
+from datetime import datetime, timedelta
+import ssl
+import base64
 import urllib3
+
+# Para enviar correos con Flask-Mail
+from flask_mail import Mail, Message
+
+# Para enviar correos con SendGrid (alternativa)
 from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail as SGMail, Email, To, Content
+
+# Para manejar MIME de correos
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.header import Header
+
+import smtplib
 
 app = Flask(__name__, static_url_path='/static')
 

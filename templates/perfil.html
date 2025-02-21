@@ -7,8 +7,6 @@
     <p class="subtitulo">Información del usuario</p>
 
     <div class="perfil-content">
-        
-
         <div class="imagen-perfil">
             <img src="{{ url_for('static', filename='user.png') }}" alt="Foto de perfil">
         </div>
@@ -27,19 +25,20 @@
     /* Estilos generales */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: var(--background-color); /* Usar la variable para el fondo */
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    color: var(--text-color); /* Usar la variable para el color del texto */
 }
 
 /* Contenedor del perfil */
 .perfil-container {
     width: 50%;
-    background: white;
+    background: var(--container-background-color); /* Fondo del contenedor */
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
@@ -53,7 +52,7 @@ h1 {
 }
 
 .subtitulo {
-    color: gray;
+    color: var(--subtitulo-color); /* Usar variable para subtitulo */
     font-size: 1.2em;
     margin-bottom: 20px;
 }
@@ -76,7 +75,7 @@ h1 {
 
 /* Estilos para los detalles */
 .detalles {
-    background: #f9f9f9;
+    background: var(--detalles-background-color); /* Fondo de los detalles */
     padding: 20px;
     border-radius: 10px;
     width: 80%;
@@ -97,6 +96,26 @@ h1 {
     .detalles {
         width: 100%;
     }
+}
+
+/* Estilos para el modo oscuro */
+[data-theme="dark"] body {
+    background-color: #333;
+    color: #f0f0f0;
+}
+
+[data-theme="dark"] .perfil-container {
+    background: #444;
+    color: #f0f0f0;
+}
+
+[data-theme="dark"] .subtitulo {
+    color: #ccc;
+}
+
+[data-theme="dark"] .detalles {
+    background: #555;
+    color: #f0f0f0;
 }
 
 </style>
