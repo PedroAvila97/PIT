@@ -25,7 +25,7 @@
     </div>
 
     <div class="table-container">
-        <table id="ticket-table">
+        <table class="fade-up-table" id="ticket-table">
             <thead>
                 <tr>
                     <th>Detalle</th>
@@ -193,6 +193,22 @@ th {
 
     .icon-delete:hover, .icon-edit:hover {
         color: #ff4d4d;
+    }
+
+    @keyframes fadeUp {
+        0% {
+            opacity: 0;
+            transform: translateY(30px); /* Empuja la tabla hacia abajo */
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0); /* Vuelve a su posición original */
+        }
+    }
+
+    /* Aplicar la animación a la tabla */
+    .fade-up-table {
+        animation: fadeUp 0.5s ease-out; /* Duración de la animación y tipo de transición */
     }
 
     /* Estilos del modal */
