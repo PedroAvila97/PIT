@@ -1,0 +1,378 @@
+{% include "base.html" %}
+
+{% block body %}
+<div class="panel">
+    {% if user_email == 1 or user_email == 3 %}
+    <div class="table-icons-container">
+
+        <i class="fas fa-edit icon-edit" onclick="openInsertPopup()"></i>
+    </div>
+    {% endif %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Correo</th>
+                <th>Categoria</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ticket in tickets %}
+            <tr>
+                <td class="clickable-detail" data-ticket-id="{{ ticket[0] }}">{{ ticket[1] }}</td> 
+                <td>{{ ticket[2] }}</td>
+                <td>{{ ticket[5] }}</td>
+                <td>{{ ticket[11] }}</td>
+               
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if user_email == 3 %}
+    <!-- Modal (Pop-up) -->
+    <div id="popup" class="popup hidden">
+        <div class="popup-content">
+            <span class="popup-close" onclick="closePopup()">&times;</span>
+            <h2>Editar Persona</h2>
+    
+            <input type="hidden" id="popup-id"> <!-- Campo oculto para el ID -->
+    
+            <label>Nombre:</label>
+            <input type="text" id="popup-nombre"><br>
+    
+            <label>Apellido:</label>
+            <input type="text" id="popup-apellido"><br>
+    
+            <label>Teléfono:</label>
+            <input type="text" id="popup-telefono"><br>
+    
+            <label>Dirección:</label>
+            <input type="text" id="popup-direccion"><br>
+    
+            <label>Correo:</label>
+            <input type="email" id="popup-correo"><br>
+    
+            <button class="popup-btn-save" onclick="guardarCambios()">Aceptar</button>
+            <button class="popup-btn-close" onclick="closePopup()">Cerrar</button>
+            
+            <!-- Botón de eliminar en la parte inferior derecha -->
+            <button class="popup-btn-delete" onclick="confirmarEliminar()">Eliminar</button>
+        </div>
+    </div>
+    
+     <!-- Modal de inserción -->
+     <div id="insert-popup" class="popup hidden">
+        <div class="popup-content">
+            <span class="popup-close" onclick="closeInsertPopup()">&times;</span>
+            <h2>Agregar Persona</h2>
+            
+            <label>Nombre:</label>
+            <input type="text" id="insert-nombre"><br>
+
+            <label>Apellido:</label>
+            <input type="text" id="insert-apellido"><br>
+
+            <label>Teléfono:</label>
+            <input type="text" id="insert-telefono"><br>
+
+            <label>Dirección:</label>
+            <input type="text" id="insert-direccion"><br>
+
+            <label>Correo:</label>
+            <input type="email" id="insert-correo"><br>
+
+            <label>Contraseña:</label>
+            <input type="password" id="insert-password"><br>
+
+            <label for="insert-categoria">Categoría:</label>
+            <select id="insert-categoria">
+            <option value="admin">Administrador</option>
+            <option value="user">Usuario</option>
+            <option value="tech">Técnico</option>
+            </select>
+
+            <button class="popup-btn-save" onclick="insertarPersona()">Guardar</button>
+            <button class="popup-btn-close" onclick="closeInsertPopup()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+
+    {% endif %}
+</div>
+
+<script>
+
+function openInsertPopup() {
+    document.getElementById("insert-popup").classList.remove("hidden");
+}
+
+function closeInsertPopup() {
+    document.getElementById("insert-popup").classList.add("hidden");
+}
+
+function insertarPersona() {
+    const nombre = document.getElementById("insert-nombre").value;
+    const apellido = document.getElementById("insert-apellido").value;
+    const telefono = document.getElementById("insert-telefono").value;
+    const direccion = document.getElementById("insert-direccion").value;
+    const correo = document.getElementById("insert-correo").value;
+    const password = document.getElementById("insert-password").value;
+    const categoria = document.getElementById("insert-categoria").value;
+
+    fetch('/insertar_persona', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, apellido, telefono, direccion, correo, password, categoria })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.mensaje);
+        closeInsertPopup();
+        location.reload();
+    })
+    .catch(error => console.error('Error:', error));
+}
+document.addEventListener("DOMContentLoaded", function () {
+    const nameCells = document.querySelectorAll(".clickable-detail");
+
+    nameCells.forEach(cell => {
+        cell.addEventListener("click", function () {
+            const ticketId = this.dataset.ticketId;
+
+            fetch(`/get_persona/${ticketId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("popup-id").value = ticketId;
+                    document.getElementById("popup-nombre").value = data.nombre;
+                    document.getElementById("popup-apellido").value = data.apellido;
+                    document.getElementById("popup-telefono").value = data.telefono;
+                    document.getElementById("popup-direccion").value = data.direccion;
+                    document.getElementById("popup-correo").value = data.correo;
+
+                    document.getElementById("popup").classList.remove("hidden");
+                })
+                .catch(error => console.error("Error al obtener los datos:", error));
+        });
+    });
+});
+
+function closePopup() {
+    document.getElementById("popup").classList.add("hidden");
+}
+
+function guardarCambios() {
+    const id = document.getElementById("popup-id").value;
+    const nombre = document.getElementById("popup-nombre").value;
+    const apellido = document.getElementById("popup-apellido").value;
+    const telefono = document.getElementById("popup-telefono").value;
+    const direccion = document.getElementById("popup-direccion").value;
+    const correo = document.getElementById("popup-correo").value;
+
+    fetch('/modificar_persona', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, nombre, apellido, telefono, direccion, correo })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.mensaje);
+        closePopup();
+        location.reload(); // Recargar la página para ver los cambios
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+// Función para confirmar y eliminar usuario
+function confirmarEliminar() {
+    const userId = document.getElementById("popup-id").value;
+    const userName = document.getElementById("popup-nombre").value;
+    
+    if (!userId) {
+        alert("No hay usuario seleccionado para eliminar.");
+        return;
+    }
+
+    if (confirm(`¿Estás seguro de que deseas eliminar a ${userName}?`)) {
+        fetch(`/eliminar_persona/${userId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" }
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.mensaje);
+            closePopup();
+            location.reload(); // Recargar la página para actualizar la lista
+        })
+        .catch(error => console.error("Error al eliminar usuario:", error));
+    }
+}
+
+</script>
+
+<style>
+    .panel2 {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: calc(100vh - 60px);
+        background-color: #f0f0f0;
+        text-align: center;
+    }
+
+    table {
+        width: 80%;
+        max-width: 800px;
+        border-collapse: collapse;
+        margin: 0 auto;
+    }
+
+    th, td {
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        text-align: left;
+    }
+
+
+    th {
+        background-color: #090522;
+        color: white
+    }
+
+    .clickable-detail {
+        color: #007bff;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .clickable-detail:hover {
+        color: #0056b3;
+    }
+
+    /* Estilos de los iconos */
+    .table-icons-container {
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .icon-delete, .icon-edit {
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #333;
+    }
+
+    .icon-delete:hover, .icon-edit:hover {
+        color: #ff4d4d;
+    }
+
+    /* Estilos del modal */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup.hidden {
+    display: none;
+}
+
+.popup-content {
+    background-color: rgb(7, 17, 63);
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 700px;
+    color: white;
+    height: auto;
+
+}
+
+.popup-close {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #fff;
+}
+
+.popup-content input {
+    width: 90%;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.popup-btn-save, .popup-btn-close{
+    width: 150px;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.popup-btn-delete {
+    width: 100px;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+   
+}
+
+.popup-btn-save {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.popup-btn-save:hover {
+    background-color: #45a049;
+}
+
+.popup-btn-close {
+    background-color: #d9534f;
+    color: white;
+}
+
+.popup-btn-close:hover {
+    background-color: #c9302c;
+}
+
+.popup-btn-delete {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.popup-btn-delete:hover {
+    background-color: #c9302c;
+}
+
+
+
+
+</style>
+{% endblock %}

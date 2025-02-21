@@ -1,0 +1,335 @@
+{% include "base.html" %}
+
+{% block body %}
+<div class="panel">
+    {% if user_email == 1 or user_email == 3 %}
+    <!-- Mostrar los iconos para técnico y administrador -->
+    <div class="table-icons-container">
+        <i class="fas fa-times icon-delete"></i>
+        <i class="fas fa-edit icon-edit"></i>
+    </div>
+    {% endif %}
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Detalle</th>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                    <th>Fecha de Creación</th>
+                    <th>Usuario</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td class="clickable-detail" data-detail="{{ ticket[0] }}">{{ ticket[1] }}</td> <!-- Ajusta el índice según tu esquema de tabla -->
+                    <td>{{ ticket[2] }}</td>
+                    <td>{{ ticket[3] }}</td>
+                    <td>{{ ticket[5] }}</td>
+                    <td>{{ ticket[11] }} {{ ticket[12] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    
+</div>
+
+<!-- Modal para confirmar la creación del ticket -->
+<div id="popup" class="popup hidden">
+    <div class="popup-content">
+        <span id="popup-close" class="popup-close">&times;</span>
+        <h2>¿Deseas crear este ticket?</h2>
+        <input type="hidden" id="ticket-id" name="ticket_id" />
+        <button id="confirm-create">Sí, crear</button>
+        <button id="cancel-create">Cancelar</button>
+    </div>
+</div>
+
+<!-- Modal para seleccionar una persona -->
+<div id="popup2" class="popup hidden">
+    <div class="popup-content">
+        <span id="popup-close2" class="popup-close">&times;</span>
+        <h2>Selecciona una persona</h2>
+        <input type="hidden" id="ticket-id2" name="ticket_id" />
+        <select id="person-list">
+            <option value="">Cargando...</option>
+        </select>
+        <button id="confirm-select">Asignar</button>
+        <button id="cancel-select">Cancelar</button>
+    </div>
+</div>
+
+
+
+<style>
+    .panel2 {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: calc(100vh - 60px);
+        background-color: #f0f0f0;
+        text-align: center;
+    }
+
+    .table-container {
+    max-height: 400px; /* Ajusta la altura máxima según necesites */
+    overflow-y: auto;
+    border: 1px solid #ccc; /* Opcional: para visualizar el contenedor */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    text-align: left;
+}
+
+th {
+    background-color: #090522;
+    color: white;
+    position: sticky;
+    top: 0;
+}
+
+
+    .clickable-detail {
+        color: #007bff;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .clickable-detail:hover {
+        color: #0056b3;
+    }
+
+    /* Estilos de los iconos */
+    .table-icons-container {
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .icon-delete, .icon-edit {
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #333;
+    }
+
+    .icon-delete:hover, .icon-edit:hover {
+        color: #ff4d4d;
+    }
+
+    /* Estilos del modal */
+    .popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .popup.hidden {
+        display: none;
+    }
+
+    .popup-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        width: 300px;
+    }
+
+    .popup-close {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #333;
+    }
+
+    .form-group {
+        margin: 15px 0;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    select, button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+</style>
+
+{% if user_email == 1 %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const details = document.querySelectorAll('.clickable-detail');
+    const popup = document.getElementById('popup');
+    const popupClose = document.getElementById('popup-close');
+    const confirmCreate = document.getElementById('confirm-create');
+    const cancelCreate = document.getElementById('cancel-create');
+    let currentTicketId = null;
+
+    // Evento al hacer clic en un ticket
+    details.forEach(detail => {
+        detail.addEventListener('click', () => {
+            currentTicketId = detail.getAttribute('data-detail');
+            popup.classList.remove('hidden');
+        });
+    });
+
+    // Confirmar la creación del ticket
+    confirmCreate.addEventListener('click', () => {
+        if (currentTicketId) {
+            fetch('/update_ticket', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ticket_id: currentTicketId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                popup.classList.add('hidden');
+                location.reload(); // Recargar la página para ver cambios
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    });
+
+    // Cancelar acción
+    cancelCreate.addEventListener('click', () => {
+        popup.classList.add('hidden');
+    });
+
+    // Cerrar pop-up al hacer clic en la "X"
+    popupClose.addEventListener('click', () => {
+        popup.classList.add('hidden');
+    });
+
+    // Cerrar al hacer clic fuera del contenido
+    popup.addEventListener('click', (event) => {
+        if (event.target === popup) {
+            popup.classList.add('hidden');
+        }
+    });
+});
+</script>
+{% endif %}
+
+{% if user_email == 3 %}
+<script>
+   document.addEventListener("DOMContentLoaded", function () {
+    const details = document.querySelectorAll('.clickable-detail');
+    const popup = document.getElementById('popup2');
+    const popupClose = document.getElementById('popup-close2');
+    const confirmSelect = document.getElementById('confirm-select');
+    const cancelSelect = document.getElementById('cancel-select');
+    const personList = document.getElementById('person-list');
+    let currentTicketId = null;
+
+    // Evento al hacer clic en un ticket
+    details.forEach(detail => {
+        detail.addEventListener('click', () => {
+            currentTicketId = detail.getAttribute('data-detail');
+            popup.classList.remove('hidden');
+
+            // Obtener lista de personas desde Flask
+            fetch('/get_persons')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Personas recibidas:', data);  // Verifica en la consola los datos recibidos
+                    personList.innerHTML = ''; // Limpiar las opciones anteriores
+                    
+                    // Recorre los datos y agrega cada persona como opción
+                    data.forEach(person => {
+                        const option = document.createElement('option');
+                        option.value = person.id;  // Asegúrate de que 'id' es el valor correcto
+                        option.textContent = person.nombre; // El nombre que se ve
+                        personList.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    });
+
+    // Confirmar selección de persona
+    confirmSelect.addEventListener('click', () => {
+        const selectedPerson = personList.value;
+        console.log('Técnico seleccionado:', selectedPerson);  // Verifica que el técnico seleccionado sea correcto
+
+        if (selectedPerson && selectedPerson !== "undefined") {
+            if (currentTicketId) {
+                fetch('/assign_ticket', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ticket_id: currentTicketId, person_id: selectedPerson })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    popup.classList.add('hidden');
+                    location.reload(); // Recargar la página para ver cambios
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        } else {
+            alert("Por favor, selecciona un técnico.");
+        }
+    });
+
+    // Cancelar selección
+    cancelSelect.addEventListener('click', () => {
+        popup.classList.add('hidden');
+    });
+
+    // Cerrar pop-up al hacer clic en la "X"
+    popupClose.addEventListener('click', () => {
+        popup.classList.add('hidden');
+    });
+
+    // Cerrar al hacer clic fuera del contenido
+    popup.addEventListener('click', (event) => {
+        if (event.target === popup) {
+            popup.classList.add('hidden');
+        }
+    });
+});
+</script>
+{% endif %}
+
+
+{% endblock %}

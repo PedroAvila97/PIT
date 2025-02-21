@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat en Tiempo Real</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <h2>Chat en Tiempo Real</h2>
+    <div id="chat">
+        {% for usuario, mensaje, fecha in mensajes %}
+            <p><strong>{{ usuario }}:</strong> {{ mensaje }} <small>({{ fecha }})</small></p>
+        {% endfor %}
+    </div>
+    <input id="mensaje" type="text" placeholder="Escribe un mensaje">
+    <button onclick="enviarMensaje()">Enviar</button>
+
+    <script>
+        var socket = io();
+
+        function enviarMensaje() {
+            let mensaje = document.getElementById("mensaje").value;
+            socket.send({"mensaje": mensaje});
+            document.getElementById("mensaje").value = "";
+        }
+
+        socket.on("message", function(data) {
+            let chat = document.getElementById("chat");
+            chat.innerHTML += `<p><strong>${data.usuario}:</strong> ${data.mensaje}</p>`;
+        });
+    </script>
+</body>
+</html>

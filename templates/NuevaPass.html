@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://kit.fontawesome.com/a2dd6045c4.js" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/cambioPass.css') }}">
+    <title>Nueva Contraseña</title>
+</head>
+<body>
+
+<section>
+    <div class="contenedor">
+        <div class="formulario">
+            <form action="/update_password" method="POST">
+                <h2>Nueva Contraseña</h2>
+
+                <!-- Email viene desde Flask -->
+                <div class="input-contenedor">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" name="correo" value="{{ email }}" readonly>
+                </div>
+
+                <div class="input-contenedor">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" name="new_password" required>
+                    <label for="#">Nueva Contraseña</label>
+                </div>
+
+                <div class="input-contenedor">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" name="confirm_password" required>
+                    <label for="#">Confirme Contraseña</label>
+                </div>
+
+                <div>
+                    <button type="submit">Confirmar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

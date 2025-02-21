@@ -1,0 +1,17 @@
+{% include "base.html" %}
+
+{% block body %}
+<div class="panel">
+    <h1>
+        {% if user_email == 1 %}
+            ¡Hola Técnico, {{ nombre }}!
+        {% elif user_email == 2 %}
+            ¡Hola, {{ nombre }}!
+        {% elif user_email == 3 %}
+            ¡Hola Administrador, {{ nombre }}!
+        {% else %}
+            ¡Hola, {{ nombre }}!
+        {% endif %}
+    </h1>
+</div>
+{% endblock %}

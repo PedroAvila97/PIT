@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="container2">
+    <div class="panel">
+        <div class="search-container">
+            <!-- Barra de búsqueda -->
+            <input type="text" id="search-input" placeholder="Buscar por nombre...">
+        </div>
+
+        <div class="table-container">
+            <table id="personas-table">
+                <thead>
+                    <tr>
+                        <th>Tecnico</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for persona in personas %}
+                    <tr>
+                        <td class="clickable-detail" data-ticket-id="{{ persona[0] }}" data-nombre="{{ persona[1] }}" data-apellido="{{ persona[2] }}">
+                            {{ persona[1] }} {{ persona[2] }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <<!-- Panel de detalle del usuario -->
+<div id="detail-panel" class="detail-panel">
+    <h3>Detalles del Usuario</h3>
+    <p id="nombre"></p>
+    <p id="apellido"></p>
+    <p class="email-detail" id="email">
+        <!-- Este enlace se actualizará dinámicamente con el correo del usuario -->
+        <a href="#" id="email-link"></a>
+    </p>
+    <!-- Agrega más campos según lo necesites -->
+</div>
+
+
+<style>
+    /* Estilos generales */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    .container2 {
+        display: flex;
+        flex-direction: row; 
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    .clickable-detail{
+        color: #007bff;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+    .clickable-detail:hover {
+        color: #0056b3;
+    }
+
+
+    .email-detail{
+        color: #007bff;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+    .email-detail:hover {
+        color: #0056b3;
+    }
+
+    .panel {
+        width: 30%;
+        background: var(--background-color);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+    .detail-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 30%;
+    min-height: 300px; /* Altura mínima para evitar que el contenido esté muy arriba */
+    background: var(--background-color);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: fixed; /* Fija el panel en la pantalla */
+    top: 50%; /* Posiciona el panel en el medio de la pantalla */
+    left: 50%; /* Posiciona el panel en el medio de la pantalla */
+    transform: translate(-50%, -50%); /* Ajusta el panel para que esté centrado completamente */
+    z-index: 1; /* Asegura que el panel esté por encima de otros elementos */
+    text-align: center; /* Centrar el texto dentro del panel */
+    overflow-y: auto; /* Permite desplazarse si el contenido excede el tamaño del panel */
+    max-height: 80vh; /* Limita la altura del panel */
+}
+
+.detail-panel p {
+    margin: 10px 0; /* Espaciado entre los párrafos */
+    font-size: 1.1rem; /* Tamaño de fuente para mayor legibilidad */
+}
+
+.detail-panel h3 {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: var(--text-color); /* Asegurarse de que el color del texto sea legible */
+}
+
+
+
+
+    .search-container {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 20px;
+        gap: 10px;
+    }
+
+    #search-input {
+        padding: 8px;
+        font-size: 1rem;
+        width: 100%;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        border: 1px solid var(--text-color);
+    }
+
+    .table-container {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid var(--text-color);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 10px;
+        border: 1px solid var(--text-color);
+        text-align: left;
+        background-color: var(--background-color);
+        color: var(--text-color);
+    }
+
+    th {
+        background-color: #090522;
+        color: white;
+        position: sticky;
+        top: 0;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("search-input");
+    const table = document.getElementById("personas-table");
+    const rows = table.querySelectorAll("tbody tr");
+    const detailPanel = document.getElementById("detail-panel");
+    const nombreField = document.getElementById("nombre");
+    const apellidoField = document.getElementById("apellido");
+    const emailLink = document.getElementById("email-link"); // El enlace de correo
+
+    function filterTable() {
+        const filterValue = searchInput.value.toLowerCase();
+
+        rows.forEach(row => {
+            const nameCell = row.querySelector("td");
+            if (nameCell) {
+                const nameText = nameCell.textContent.toLowerCase();
+                row.style.display = nameText.includes(filterValue) ? "" : "none";
+            }
+        });
+    }
+
+    searchInput.addEventListener("input", filterTable);
+
+    // Evento de clic en una fila
+    table.addEventListener("click", function(event) {
+        if (event.target && event.target.classList.contains("clickable-detail")) {
+            const id = event.target.dataset.ticketId; // Obtener el ID de la persona
+
+            // Realizar solicitud fetch para obtener los detalles
+            fetch(`/detalle/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        // Actualizar el panel con los detalles
+                        nombreField.textContent = "Nombre: " + data.nombre;
+                        apellidoField.textContent = "Apellido: " + data.apellido;
+
+                        // Crear el enlace mailto para el correo
+                        emailLink.href = `mailto:${data.email}`;  // Actualizar el enlace con el correo
+                        emailLink.textContent = data.email; // Mostrar el correo real
+
+                        // Mostrar el panel de detalles
+                        detailPanel.style.display = "block"; // Mostrar el panel de detalles
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Hubo un problema al cargar los detalles.');
+                });
+        }
+    });
+});
+
+</script>
+
+{% endblock %}

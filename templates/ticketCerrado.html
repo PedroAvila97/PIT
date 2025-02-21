@@ -1,0 +1,172 @@
+{% include "base.html" %}
+
+{% block body %}
+
+<div class="panel">
+    <div class="search-container">
+        <!-- Barra de búsqueda -->
+        <input type="text" id="search-input" placeholder="Buscar...">
+        
+        <!-- Filtro de búsqueda -->
+        <select id="search-filter">
+            <option value="detalle">Detalle</option>
+            <option value="usuario">Usuario</option>
+            <option value="tecnico">Técnico</option>
+            <option value="fecha">Fecha</option>
+        </select>
+    </div>
+
+    <div class="table-container">
+        <table id="ticket-table">
+            <thead>
+                <tr>
+                    <th>Detalle</th>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                    <th>Fecha de Creación</th>
+                    <th>Usuario</th>
+                    <th>Tecnico Asignado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td>{{ ticket[1] }}</td>
+                    <td>{{ ticket[2] }}</td>
+                    <td>{{ ticket[3] }}</td>
+                    <td>{{ ticket[5] }}</td>
+                    <td>{{ ticket[11] }} {{ ticket[12] }}</td>
+                    <td>{{ ticket[13] }} {{ ticket[14] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .panel2 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: calc(100vh - 60px); /* Ajusta la altura restando la altura del header */
+        background-color: #f0f0f0; /* Color de fondo del panel */
+        font-size: 2rem; /* Tamaño de fuente */
+        color: #333; /* Color del texto */
+        text-align: center; /* Centrar texto */
+    }
+
+    .table-container {
+        max-height: 400px; /* Ajusta la altura máxima según necesites */
+        overflow-y: auto;
+        border: 1px solid #ccc; /* Opcional: para visualizar el contenedor */
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        text-align: left;
+    }
+
+    th {
+        background-color: #090522;
+        color: white;
+        position: sticky;
+        top: 0;
+    }
+
+    .search-container {
+        margin: 20px 0;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    #search-input {
+        padding: 8px;
+        font-size: 1rem;
+    }
+
+    #search-filter {
+        padding: 8px;
+        font-size: 1rem;
+    }
+
+    #search-input[type="date"] {
+        width: 200px;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("search-input");
+        const searchFilter = document.getElementById("search-filter");
+        const table = document.getElementById("ticket-table");
+        const rows = table.querySelectorAll("tbody tr");
+    
+        // Función para cambiar el tipo de input dependiendo del filtro
+        function changeSearchInputType() {
+            const filterValue = searchFilter.value;
+            if (filterValue === "fecha") {
+                searchInput.type = "date";  // Cambia el campo de texto a un campo de fecha
+            } else {
+                searchInput.type = "text";  // Vuelve a ser un campo de texto
+            }
+            searchInput.value = "";  // Limpiar el campo de búsqueda cada vez que cambia el filtro
+            filterTable();  // Llamamos a la función de filtrado inmediatamente para actualizar la tabla
+        }
+    
+        // Función para filtrar la tabla
+        function filterTable() {
+            const filterValue = searchInput.value.toLowerCase();
+            const filterOption = searchFilter.value;
+    
+            rows.forEach(row => {
+                let showRow = false;
+                const cells = row.querySelectorAll("td");
+    
+                switch (filterOption) {
+                    case "detalle":
+                        showRow = cells[0].textContent.toLowerCase().includes(filterValue);
+                        break;
+                    case "usuario":
+                        showRow = cells[4].textContent.toLowerCase().includes(filterValue);
+                        break;
+                    case "tecnico":
+                        showRow = cells[5].textContent.toLowerCase().includes(filterValue);
+                        break;
+                    case "fecha":
+                        showRow = cells[3].textContent.toLowerCase().includes(filterValue);
+                        break;
+                    default:
+                        showRow = false;
+                }
+    
+                // Mostrar u ocultar la fila
+                if (showRow) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+    
+        // Escuchar cambios en el input de búsqueda y el filtro
+        searchInput.addEventListener("input", filterTable);
+        searchFilter.addEventListener("change", function () {
+            changeSearchInputType();
+            filterTable();  // Llamamos a la función de filtrado cada vez que cambia el filtro
+        });
+    
+        // Inicializa el tipo de búsqueda dependiendo del filtro seleccionado al cargar
+        changeSearchInputType();
+    });
+    </script>
+    
+
+{% endblock %}

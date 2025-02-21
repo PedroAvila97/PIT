@@ -1,0 +1,53 @@
+{% include "base.html" %}
+
+{% block body %}
+
+
+<div class="formulario-contenedor">
+    <form action="/creaTickets" method="POST"  enctype="multipart/form-data" class="formulario">
+        <div class="grupo-campo">
+            <label for="detalle">Detalle:</label>
+            <input type="text" id="detalle" name="detalle" required>
+        </div>
+        <div class="grupo-campo">
+            <label for="descripcion">Descripción:</label>
+            <textarea id="descripcion" name="descripcion" rows="4" required></textarea>
+        </div>
+        <div class="grupo-campo">
+            <label for="fechaCreado">Fecha Creado:</label>
+            <input type="date" id="fechaCreado" name="fechaCreado" readonly required>
+        </div>
+        <div class="grupo-campo">
+            <label for="prioridad">Prioridad:</label>
+            <select id="prioridad" name="prioridad" required>
+                <option value="Alta">Alta</option>
+                <option value="Media">Media</option>
+                <option value="Baja">Baja</option>
+            </select>
+        </div>
+        <div class="grupo-campo">
+            <label for="imagen">Adjuntar Imagen:</label>
+            <input type="file" id="imagen" name="imagen" accept="image/*">
+        </div>
+        <button type="submit" class="boton-enviar">Enviar</button>
+    </form>
+</div>
+
+<script>
+    // Obtiene el campo de fecha
+    const fechaCreado = document.getElementById('fechaCreado');
+
+    // Obtiene la fecha actual en formato 'YYYY-MM-DD'
+    const fechaActual = new Date().toISOString().split('T')[0];
+
+    // Establece la fecha actual como valor predeterminado
+    fechaCreado.value = fechaActual;
+
+
+</script>
+{% if mensaje %}
+<script>
+    alert("{{ mensaje }}");
+</script>
+{% endif %}
+{% endblock %}

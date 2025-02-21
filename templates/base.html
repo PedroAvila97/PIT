@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--=============== REMIXICONS ===============-->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!--=============== CSS ===============-->
+    <link rel= "stylesheet" href= "{{ url_for('static',filename='styles/menu.css') }}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+      
+
+    <title>Universidad Sudamericana</title>
+
+    <style>
+        /* Estilos para el panel centrado */
+        .panel {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: calc(100vh - 60px); /* Ajusta la altura restando la altura del header */
+          background-color: var(--background-color); /* Usamos una variable para el color de fondo */
+          font-size: 2rem; /* Tamaño de fuente */
+          color: var(--text-color); /* Usamos una variable para el color del texto */
+          text-align: center; /* Centrar texto */
+        }
+      
+        /* Variables CSS para colores claros y oscuros */
+        :root {
+          --background-color: #f0f0f0; /* Color de fondo en modo claro */
+          --text-color: #000000; /* Color del texto en modo claro */
+        }
+      
+        /* Modo oscuro */
+        [data-theme="dark"] {
+          --background-color: #333; /* Color de fondo en modo oscuro */
+          --text-color: #f0f0f0; /* Color del texto en modo oscuro */
+        }
+
+
+  /* Estilo del botón de cambio de tema */
+  #theme-toggle {
+    position: fixed;
+    top: 20px; /* Ubicado en la parte inferior */
+    left: 1300px; /* Ubicado a la izquierda */
+    width: 40px; /* Tamaño del botón */
+    height: 40px; /* Tamaño del botón */
+    border-radius: 50%; /* Hacemos que sea circular */
+    background-color: var(--background-color); /* Fondo según el tema */
+    color: var(--text-color); /* Color del ícono */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  /* Cambios en el botón cuando el tema está en modo oscuro */
+  [data-theme="dark"] #theme-toggle {
+    background-color: #333;
+    color: #f0f0f0;
+  }
+
+  /* Estilo para los íconos */
+  #theme-toggle i {
+    transition: transform 0.3s;
+  }
+
+  /* Modo oscuro: el ícono de la luna rota */
+  [data-theme="dark"] #theme-toggle i {
+    transform: rotate(180deg); /* Rota el ícono cuando el tema está en oscuro */
+  }
+
+
+      </style>
+      
+</head>
+<body>
+    <header class="header">
+        
+        <nav class="nav container">
+            
+            <div class="nav__data">
+                <a href="#" class="nav__logo">
+                    <i class="ri-school-line"></i> Universidad Sudamericana
+                </a>
+                
+                <div class="nav__toggle" id="nav-toggle">
+                    <i class="ri-menu-line nav__burger"></i>
+                    <i class="ri-close-line nav__close"></i>
+                </div>
+            </div>
+            
+    
+            <!--=============== NAV MENU ===============-->
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li><a href="index" class="nav__link">Inicio</a></li>
+                    <li class="nav__item">
+                      {% if user_email == 1 or user_email == 3 %}
+                      <a href="solicitudes" class="nav__link">
+                          Solicitudes <span id="solicitudes-count" class="notification-badge"></span>
+                      </a>
+                  </li>
+                  {% endif %}
+                  
+                  
+                    <!--=============== DROPDOWN 1 ===============-->
+                    <li class="dropdown__item">
+                        <div class="nav__link">
+                            Tickets <i class="ri-arrow-down-s-line dropdown__arrow"></i>
+                        </div>
+                        <ul class="dropdown__menu">
+                            <li><a href="ticketAbierto" class="dropdown__link"><i class="ri-pie-chart-line"></i> Abiertos</a></li>
+                            <li><a href="ticketCerrado" class="dropdown__link"><i class="ri-arrow-up-down-line"></i> Cerrados</a></li>
+                            <li><a href="tickets" class="dropdown__link"><i class="ri-add-line"></i> Nuevo</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="contact" class="nav__link">Contacto</a></li>
+                    
+                    <!--=============== DROPDOWN 2 ===============-->
+                    <li class="dropdown__item">
+                        <div class="nav__link">
+                            Usuarios <i class="ri-arrow-down-s-line dropdown__arrow"></i>
+                        </div>
+                        <ul class="dropdown__menu">
+                            <li><a href="perfil" class="dropdown__link"><i class="ri-user-line"></i> Perfil</a></li>
+                            <li><a href="cuenta" class="dropdown__link"><i class="ri-lock-line"></i> Cuenta</a></li>
+                     
+                            
+                            {% if user_email == 3 %}
+                            <li><a href="admindashboard" class="dropdown__link"><i class="ri-user-settings-line"></i> Administrar Usuarios</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                    <li><a href="logout" class="nav__link">Cerrar Sesion</a></li>
+                    <button id="theme-toggle">
+                        <i class="fas fa-sun"></i> <!-- Ícono del sol en modo claro -->
+                      </button>
+                      
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <footer class="footer">
+      <p>© 2025 Nueva Universidad Sudamericana. HELPDESK.</p>
+  </footer>
+  
+
+    
+
+    {% block body %}
+
+    {% endblock %}
+
+    <!--=============== MAIN JS ===============-->
+    <script src="main.js"></script>
+   
+</body>
+
+<script>
+    const themeToggleButton = document.getElementById("theme-toggle");
+    const body = document.body;
+    const themeIcon = themeToggleButton.querySelector("i");
+  
+    // Revisamos si hay un tema almacenado previamente en el localStorage
+    const currentTheme = localStorage.getItem("theme") || "light";
+  
+    // Aplicamos el tema guardado
+    if (currentTheme === "dark") {
+      body.setAttribute("data-theme", "dark");
+      themeIcon.classList.remove("fa-sun");
+      themeIcon.classList.add("fa-moon");
+    } else {
+      body.setAttribute("data-theme", "light");
+      themeIcon.classList.remove("fa-moon");
+      themeIcon.classList.add("fa-sun");
+    }
+  
+    // Evento de clic para cambiar el tema
+    themeToggleButton.addEventListener("click", () => {
+      if (body.getAttribute("data-theme") === "light") {
+        body.setAttribute("data-theme", "dark");
+        themeIcon.classList.remove("fa-sun");
+        themeIcon.classList.add("fa-moon");
+        localStorage.setItem("theme", "dark");
+      } else {
+        body.setAttribute("data-theme", "light");
+        themeIcon.classList.remove("fa-moon");
+        themeIcon.classList.add("fa-sun");
+        localStorage.setItem("theme", "light");
+      }
+    });
+
+    function actualizarSolicitudes() {
+    fetch('/contar_solicitudes') // Ruta de tu backend
+        .then(response => response.json())
+        .then(data => {
+            const solicitudCount = data.cantidad; // Ajusta según la respuesta del backend
+            const badge = document.getElementById("solicitudes-count");
+
+            if (solicitudCount > 0) {
+                badge.textContent = solicitudCount;
+                badge.style.display = "inline-block"; // Mostrar si hay solicitudes
+            } else {
+                badge.textContent = ""; // Elimina el contenido
+                badge.style.display = "none"; // Ocultar el elemento completamente
+            }
+        })
+        .catch(error => console.error('Error al obtener solicitudes:', error));
+}
+
+// Ejecutar cuando la página cargue
+document.addEventListener("DOMContentLoaded", actualizarSolicitudes);
+
+
+
+
+  </script>
+</html>

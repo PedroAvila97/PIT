@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="panel">
+    <div class="button-wrapper">
+        <!-- Botón para mostrar el panel -->
+        <form method="POST">
+            <button type="submit" class="button-container" id="changePasswordBtn">
+                <span class="button-text">Cambiar Contraseña</span>
+                <span class="button-icon"><i class="ri-lock-password-line"></i></span>
+            </button>
+        </form>
+    </div>
+
+    <!-- Panel con campos de contraseña que aparece al hacer clic -->
+    <div class="change-password-panel" id="changePasswordPanel">
+        <form action="{{ url_for('update_password2') }}" method="POST">
+            <div class="input-contenedor">
+                <label for="current_password">Contraseña Actual</label>
+                <input type="password" id="current_password" name="current_password" required>
+            </div>
+            <div class="input-contenedor">
+                <label for="new_password">Nueva Contraseña</label>
+                <input type="password" id="new_password" name="new_password" required>
+            </div>
+            <div class="input-contenedor">
+                <label for="confirm_password">Repetir Nueva Contraseña</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+            </div>
+            <button type="submit">Confirmar Cambio</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .button-wrapper {
+        position: absolute;
+        left: 50px;
+        top: 30%;
+        transform: translateY(-50%);
+    }
+
+    .button-container {
+        display: inline-flex;
+        align-items: center;
+        background: #0e33c8;
+        border-radius: 8px;
+        overflow: hidden;
+        border: none;
+        cursor: pointer;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .button-text {
+        padding: 12px 20px;
+        background: #1100c9;
+    }
+
+    .button-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+        background: #1c00b8;
+    }
+
+    .button-icon i {
+        font-size: 24px;
+    }
+
+    .button-container:hover {
+        background: #0008a6;
+    }
+
+    /* Estilos del panel oculto inicialmente */
+    .change-password-panel {
+        display: none;
+        position: absolute;
+        left: 550px;
+        top: 27%;
+        background-color: #f1f1f1;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .input-contenedor {
+        margin-bottom: 15px;
+        color:black
+    }
+
+    .input-contenedor input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .change-password-panel button {
+        background-color: #0e33c8;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .change-password-panel button:hover {
+        background-color: #0008a6;
+    }
+</style>
+
+<script>
+    // Mostrar el panel de cambio de contraseña al hacer clic en el botón
+    document.getElementById('changePasswordBtn').addEventListener('click', function(e) {
+        e.preventDefault();  // Prevenir que el formulario se envíe
+        const panel = document.getElementById('changePasswordPanel');
+        panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
+    });
+</script>
+
+{% endblock %}

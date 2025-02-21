@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<div class="perfil-container">
+    <h1>Perfil</h1>
+    <p class="subtitulo">Información del usuario</p>
+
+    <div class="perfil-content">
+        
+
+        <div class="imagen-perfil">
+            <img src="{{ url_for('static', filename='user.png') }}" alt="Foto de perfil">
+        </div>
+
+        <div class="detalles">
+            <h2>Detalles</h2>
+            <p><strong>Nombre:</strong> {{ user[0] }}</p>
+            <p><strong>Apellido:</strong> {{ user[1] }}</p>
+            <p><strong>Ubicación:</strong> {{ user[2] }}</p>
+            <p><strong>Email:</strong> {{ user[3] }}</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Contenedor del perfil */
+.perfil-container {
+    width: 50%;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Título y subtítulo */
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.subtitulo {
+    color: gray;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+/* Imagen de perfil */
+.imagen-perfil img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+/* Contenido del perfil */
+.perfil-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Estilos para los detalles */
+.detalles {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.detalles p {
+    font-size: 1.1em;
+    margin: 10px 0;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .perfil-container {
+        width: 90%;
+    }
+
+    .detalles {
+        width: 100%;
+    }
+}
+
+</style>
+
+{% endblock %}
