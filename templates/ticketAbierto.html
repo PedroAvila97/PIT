@@ -14,15 +14,23 @@
         <!-- Barra de búsqueda -->
         <input type="text" id="search-input" placeholder="Buscar...">
         
-        <!-- Filtro de búsqueda -->
+        <!-- Filtro de búsqueda (Menú desplegable para opciones como detalle, usuario, etc.) -->
         <select id="search-filter">
             <option value="detalle">Detalle</option>
             <option value="usuario">Usuario</option>
             <option value="tecnico">Técnico</option>
             <option value="fecha">Fecha</option>
-            <option value="Adjunto">Fecha</option>
+        </select>
+    
+        <!-- Menú desplegable para filtrar por Prioridad -->
+        <select id="priority-filter" onchange="filterTable()">
+            <option value="">Filtrar por Prioridad</option>
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
         </select>
     </div>
+    
 
     <div class="table-container">
         <table class="fade-up-table" id="ticket-table">
@@ -34,6 +42,7 @@
                     <th>Fecha de Creación</th>
                     <th>Usuario</th>
                     <th>Tecnico Asignado</th>
+                    <th>Prioridad</th>
                     <th>Adjunto</th>
                 </tr>
             </thead>
@@ -46,6 +55,7 @@
                     <td>{{ ticket[5] }}</td>
                     <td>{{ ticket[11] }} {{ ticket[12] }}</td>
                     <td>{{ ticket[13] }} {{ ticket[14] }}</td>
+                    <td>{{ ticket[15] }}</td>
                     <td>
                         <img id="imagen-{{ ticket[0] }}" width="100">
                         <script>
@@ -133,6 +143,28 @@
 </div>
 
 <style>
+
+    /* Contenedor para la barra de búsqueda y los filtros */
+.search-container {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;  /* Espaciado entre los elementos */
+}
+
+#search-input {
+    padding: 8px;
+    font-size: 1rem;
+    width: 300px; /* Ajusta el tamaño de la barra de búsqueda */
+}
+
+#search-filter, #priority-filter {
+    padding: 8px;
+    font-size: 1rem;
+    width: 200px; /* Ajusta el tamaño del menú desplegable */
+}
+
     .panel2 {
         display: flex;
         flex-direction: column;
@@ -361,78 +393,133 @@ th {
         }
     });
 
-    document.addEventListener("DOMContentLoaded", function () {
-        const searchInput = document.getElementById("search-input");
-        const searchFilter = document.getElementById("search-filter");
-        const table = document.getElementById("ticket-table");
-        const rows = table.querySelectorAll("tbody tr");
-
-        // Función para cambiar el tipo de input dependiendo del filtro
-        function changeSearchInputType() {
-            const filterValue = searchFilter.value;
-            if (filterValue === "fecha") {
-                searchInput.type = "date";  // Cambia el campo de texto a un campo de fecha
-            } else {
-                searchInput.type = "text";  // Vuelve a ser un campo de texto
-            }
-            searchInput.value = "";  // Limpiar el campo de búsqueda cada vez que cambia el filtro
-            filterTable();  // Llamamos a la función de filtrado inmediatamente para actualizar la tabla
-        }
-
-        // Función para filtrar la tabla
-        function filterTable() {
-            const filterValue = searchInput.value.toLowerCase();
-            const filterOption = searchFilter.value;
-
-            rows.forEach(row => {
-                let showRow = false;
-                const cells = row.querySelectorAll("td");
-
-                switch (filterOption) {
-                    case "detalle":
-                        showRow = cells[0].textContent.toLowerCase().includes(filterValue);
-                        break;
-                    case "usuario":
-                        showRow = cells[4].textContent.toLowerCase().includes(filterValue);
-                        break;
-                    case "tecnico":
-                        showRow = cells[5].textContent.toLowerCase().includes(filterValue);
-                        break;
-                    case "fecha":
-                        // Comparar la fecha correctamente
-                        const rowDate = cells[3].textContent.trim();
-                        if (rowDate) {
-                            const date = new Date(rowDate);
-                            const inputDate = new Date(filterValue);
-                            showRow = date.getFullYear() === inputDate.getFullYear() &&
-                                      date.getMonth() === inputDate.getMonth() &&
-                                      date.getDate() === inputDate.getDate();
-                        }
-                        break;
-                    default:
-                        showRow = false;
-                }
-
-                // Mostrar u ocultar la fila
-                if (showRow) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-        }
-
-        // Escuchar cambios en el input de búsqueda y el filtro
-        searchInput.addEventListener("input", filterTable);
-        searchFilter.addEventListener("change", function () {
-            changeSearchInputType();
-            filterTable();  // Llamamos a la función de filtrado cada vez que cambia el filtro
-        });
-
-        // Inicializa el tipo de búsqueda dependiendo del filtro seleccionado al cargar
-        changeSearchInputType();
-    });
 </script>
 {% endif %}
+
+<script>
+// Función para filtrar la tabla
+function filterTable() {
+    const searchInput = document.getElementById("search-input");
+    const searchFilter = document.getElementById("search-filter");
+    const priorityFilter = document.getElementById("priority-filter");
+    const table = document.getElementById("ticket-table");
+    const rows = table.querySelectorAll("tbody tr");
+
+    const filterValue = searchInput.value.toLowerCase();
+    const filterOption = searchFilter.value;
+    const priorityValue = priorityFilter.value.toLowerCase(); // Obtener el valor de la prioridad seleccionada
+    
+    rows.forEach(row => {
+        let showRow = false;
+        const cells = row.querySelectorAll("td");
+
+        switch (filterOption) {
+            case "detalle":
+                showRow = cells[0].textContent.toLowerCase().includes(filterValue);
+                break;
+            case "usuario":
+                showRow = cells[4].textContent.toLowerCase().includes(filterValue);
+                break;
+            case "tecnico":
+                showRow = cells[5].textContent.toLowerCase().includes(filterValue);
+                break;
+            case "fecha":
+                const rowDate = cells[3].textContent.trim();
+                if (rowDate) {
+                    const date = new Date(rowDate);
+                    const inputDate = new Date(filterValue);
+                    showRow = date.getFullYear() === inputDate.getFullYear() &&
+                              date.getMonth() === inputDate.getMonth() &&
+                              date.getDate() === inputDate.getDate();
+                }
+                break;
+            default:
+                showRow = true; // Si no hay filtro seleccionado, mostrar todo
+        }
+
+        // Filtrar por prioridad
+        if (priorityValue) {
+            const priorityCell = cells[6].textContent.toLowerCase(); // La prioridad está en la columna 7
+            showRow = showRow && priorityCell.includes(priorityValue);
+        }
+
+        // Mostrar u ocultar la fila
+        row.style.display = showRow ? "" : "none";
+    });
+}
+
+// Función para cambiar el tipo de input dependiendo del filtro
+function changeSearchInputType() {
+    const searchInput = document.getElementById("search-input");
+    const filterValue = document.getElementById("search-filter").value;
+
+    if (filterValue === "fecha") {
+        searchInput.type = "date";
+    } else {
+        searchInput.type = "text";
+    }
+}
+
+function handleSearchFilterChange() {
+    const searchInput = document.getElementById("search-input");
+    const filterValue = document.getElementById("search-filter").value;
+
+    // Limpiar el campo de búsqueda
+    searchInput.value = "";
+
+    // Crear el menú desplegable de prioridad cuando se seleccione "prioridad"
+    if (filterValue === "prioridad") {
+        createPriorityDropdown();
+    } else {
+        changeToTextInput();
+    }
+}
+
+// Función para crear el menú desplegable de prioridades
+function createPriorityDropdown() {
+    const searchInput = document.getElementById("search-input");
+
+    // Verificar si el dropdown ya está creado
+    if (!document.getElementById("priority-dropdown")) {
+        const dropdownHTML = `
+            <select id="priority-dropdown" onchange="filterTable()">
+                <option value="">Seleccionar Prioridad</option>
+                <option value="Alta">Alta</option>
+                <option value="Media">Media</option>
+                <option value="Baja">Baja</option>
+            </select>
+        `;
+        searchInput.insertAdjacentHTML('afterend', dropdownHTML);
+        searchInput.style.display = "none"; // Ocultar el campo de texto de búsqueda
+    }
+}
+
+// Función para cambiar el campo de búsqueda a un input de texto estándar
+function changeToTextInput() {
+    const searchInput = document.getElementById("search-input");
+    const priorityDropdown = document.getElementById("priority-dropdown");
+
+    if (priorityDropdown) {
+        priorityDropdown.remove(); // Eliminar el dropdown de prioridad
+    }
+
+    searchInput.style.display = "inline-block"; // Mostrar el campo de texto de búsqueda
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Inicializa el tipo de búsqueda dependiendo del filtro seleccionado
+    changeSearchInputType();
+    document.getElementById("search-input").addEventListener("input", filterTable);
+    document.getElementById("search-filter").addEventListener("change", function () {
+        changeSearchInputType();
+        handleSearchFilterChange(); // Cambiar el filtro al seleccionar otra opción
+        filterTable();
+    });
+
+    // Llamar a la función para manejar el filtro al cargar la página
+    handleSearchFilterChange();
+});
+</script>
+
 
 {% endblock %}

@@ -45,10 +45,12 @@
   /* Estilo del botón de cambio de tema */
   #theme-toggle {
     position: fixed;
-    top: 20px; /* Ubicado en la parte inferior */
-    left: 1300px; /* Ubicado a la izquierda */
+    top: 25px; /* Ubicado en la parte inferior */
+    right: 20px;
     width: 40px; /* Tamaño del botón */
     height: 40px; /* Tamaño del botón */
+    z-index: 9999; /* Asegura que el botón esté por encima de otros elementos */
+    padding: 10px; /* Asegura que el botón no se sobreponga a otros elementos */
     border-radius: 50%; /* Hacemos que sea circular */
     background-color: var(--background-color); /* Fondo según el tema */
     color: var(--text-color); /* Color del ícono */
@@ -61,6 +63,23 @@
     font-size: 1.5rem;
     transition: background-color 0.3s, color 0.3s;
   }
+
+  /* Asegura que el botón no se vea afectado por el redimensionado */
+@media (max-width: 768px) {
+  #theme-toggle {
+    top: 15px;  /* Ajuste para pantallas más pequeñas */
+    right: 15px;
+  }
+}
+
+@media (min-width: 1200px) {
+  #theme-toggle {
+    top: 20px;
+    right: 20px;
+  }
+}
+
+
 
   /* Cambios en el botón cuando el tema está en modo oscuro */
   [data-theme="dark"] #theme-toggle {

@@ -15,11 +15,7 @@
             <form action="/update_password" method="POST">
                 <h2>Nueva Contraseña</h2>
 
-                <!-- Email viene desde Flask -->
-                <div class="input-contenedor">
-                    <i class="fa-solid fa-envelope"></i>
-                    <input type="email" name="correo" value="{{ email }}" readonly>
-                </div>
+                <input type="hidden" name="correo" value="{{ email }}">
 
                 <div class="input-contenedor">
                     <i class="fa-solid fa-lock"></i>

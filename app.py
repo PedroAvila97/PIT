@@ -46,7 +46,7 @@ context = ssl._create_unverified_context()
 
 # Función para obtener la conexión a la base de datos
 def get_connection():
-    return connect(host='localhost', port=5432, dbname='pit', user='postgres', password='tesis')
+    return connect(host='localhost', port=5432, dbname='pit', user='postgres', password='TESIS')
 
 @app.route('/')
 def home():
@@ -332,9 +332,9 @@ def creaTicket():
         
          # Mapeo de prioridad a número
         prioridad_numerica = {
-            "Alta": 1,
+            "Alta": 3,
             "Media": 2,
-            "Baja": 3
+            "Baja": 1
         }
 
         # Convertir la prioridad recibida en su número correspondiente, si no existe, asignar un valor por defecto
@@ -455,13 +455,13 @@ def mostrar_tickets():
         user_id=session.get('user_id')
         user_email=session.get('user_email')
         if user_email == 1 or user_email==3:
-         cursor.execute("SELECT d.*, p.nombre AS nombre_solicitante, p.apellido AS apellido_solicitante, t_persona.nombre AS nombre_tecnico, t_persona.apellido AS apellido_tecnico FROM \"detalleTicket\" d JOIN personas p ON d.\"idPersona\" = p.\"idPersona\"LEFT JOIN tecnico t ON d.\"idTecnico\" = t.\"idTecnico\"LEFT JOIN personas t_persona ON t.\"idPersona\" = t_persona.\"idPersona\" WHERE d.estado = \'Abierto\'")
+         cursor.execute("SELECT d.*, p.nombre AS nombre_solicitante, p.apellido AS apellido_solicitante, t_persona.nombre AS nombre_tecnico, t_persona.apellido AS apellido_tecnico, pr.\"codigoPrioridad\" FROM \"detalleTicket\" d JOIN personas p ON d.\"idPersona\" = p.\"idPersona\"LEFT JOIN tecnico t ON d.\"idTecnico\" = t.\"idTecnico\"LEFT JOIN personas t_persona ON t.\"idPersona\" = t_persona.\"idPersona\" LEFT JOIN prioridad pr ON pr.\"idPrioridad\"=d.\"idPrioridad\" WHERE d.estado = \'Abierto\'")
          tickets = cursor.fetchall()
          cursor.close()
          conn.close() 
             
         elif user_email == 2:
-         cursor.execute("SELECT d.*, p.nombre AS nombre_solicitante, p.apellido AS apellido_solicitante, t_persona.nombre AS nombre_tecnico, t_persona.apellido AS apellido_tecnico FROM \"detalleTicket\" d JOIN personas p ON d.\"idPersona\" = p.\"idPersona\"LEFT JOIN tecnico t ON d.\"idTecnico\" = t.\"idTecnico\"LEFT JOIN personas t_persona ON t.\"idPersona\" = t_persona.\"idPersona\" WHERE d.estado = \'Abierto\' and p.\"idPersona\"=%s", (user_id,))
+         cursor.execute("SELECT d.*, p.nombre AS nombre_solicitante, p.apellido AS apellido_solicitante, t_persona.nombre AS nombre_tecnico, t_persona.apellido AS apellido_tecnico,pr.\"codigoPrioridad\"  FROM \"detalleTicket\" d JOIN personas p ON d.\"idPersona\" = p.\"idPersona\"LEFT JOIN tecnico t ON d.\"idTecnico\" = t.\"idTecnico\"LEFT JOIN personas t_persona ON t.\"idPersona\" = t_persona.\"idPersona\" LEFT JOIN prioridad pr ON pr.\"idPrioridad\"=d.\"idPrioridad\" WHERE d.estado = \'Abierto\' and p.\"idPersona\"=%s", (user_id,))
          tickets = cursor.fetchall()
          cursor.close()
          conn.close()          
@@ -543,13 +543,13 @@ def mostrar_tickets_cerrados():
         user_id=session.get('user_id')
         user_email=session.get('user_email')
         if user_email == 1 or user_email==3:
-         cursor.execute("SELECT d.*, p.nombre AS nombre_solicitante, p.apellido AS apellido_solicitante, t_persona.nombre AS nombre_tecnico, t_persona.apellido AS apellido_tecnico FROM \"detalleTicket\" d JOIN personas p ON d.\"idPersona\" = p.\"idPersona\"LEFT JOIN tecnico t ON d.\"idTecnico\" = t.\"idTecnico\"LEFT JOIN personas t_persona ON t.\"idPersona\" = t_persona.\"idPersona\" WHERE d.estado = \'Abierto\'")
+         cursor.execute("SELECT d.*, p.nombre AS nombre_solicitante, p.apellido AS apellido_solicitante, t_persona.nombre AS nombre_tecnico, t_persona.apellido AS apellido_tecnico FROM \"detalleTicket\" d JOIN personas p ON d.\"idPersona\" = p.\"idPersona\"LEFT JOIN tecnico t ON d.\"idTecnico\" = t.\"idTecnico\"LEFT JOIN personas t_persona ON t.\"idPersona\" = t_persona.\"idPersona\" WHERE d.estado = \'Cerrado\'")
          tickets = cursor.fetchall()
          cursor.close()
          conn.close() 
             
         elif user_email == 2:
-         cursor.execute("SELECT d.*, p.nombre AS nombre_solicitante, p.apellido AS apellido_solicitante, t_persona.nombre AS nombre_tecnico, t_persona.apellido AS apellido_tecnico FROM \"detalleTicket\" d JOIN personas p ON d.\"idPersona\" = p.\"idPersona\"LEFT JOIN tecnico t ON d.\"idTecnico\" = t.\"idTecnico\"LEFT JOIN personas t_persona ON t.\"idPersona\" = t_persona.\"idPersona\" WHERE d.estado = \'Abierto\' and p.\"idPersona\"=%s", (user_id,))
+         cursor.execute("SELECT d.*, p.nombre AS nombre_solicitante, p.apellido AS apellido_solicitante, t_persona.nombre AS nombre_tecnico, t_persona.apellido AS apellido_tecnico FROM \"detalleTicket\" d JOIN personas p ON d.\"idPersona\" = p.\"idPersona\"LEFT JOIN tecnico t ON d.\"idTecnico\" = t.\"idTecnico\"LEFT JOIN personas t_persona ON t.\"idPersona\" = t_persona.\"idPersona\" WHERE d.estado = \'Cerrado\' and p.\"idPersona\"=%s", (user_id,))
          tickets = cursor.fetchall()
          cursor.close()
          conn.close()          
